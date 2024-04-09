@@ -22,14 +22,20 @@ Impact Subsea SDK example app written in C++17
     $ cd sdkExample
     ```
 
-4. Create a new build directory and change into it:
+4. Clone the git submodules.
+
+    ```bash
+    $ git submodule update --init --recursive --remote
+    ```
+
+5. Create a new build directory and change into it:
 
     ```bash
     $ mkdir build
     $ cd build
     ```
 
-5. Run cmake on the parent directory to generate makefile:
+6. Run cmake on the parent directory to generate makefile:
 
     ```bash
     $ cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -37,11 +43,17 @@ Impact Subsea SDK example app written in C++17
     $ cmake -DCMAKE_BUILD_TYPE=Release ..
     ```
 
-6. Run make on the generated makefile to generate the static library:
+7. Run make on the generated makefile to generate the static library:
 
     ```bash
     $ make
     ```
+    If using windows
+    ```bash
+    $ cmake --build .
+    ```
+
+8. Run the exe in the folder sdkExample/build/bin/
 
 - If on Linux make sure the app has permission to access the serial ports:
 
