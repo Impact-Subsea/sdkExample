@@ -5,6 +5,7 @@
 
 #include "app.h"
 #include "devices/isa500.h"
+#include "imuManager.h"
 
 //--------------------------------------- Class Definition -----------------------------------------
 
@@ -19,12 +20,6 @@ namespace IslSdk
         void disconnectSignals(Device& device) override;
         void doTask(int_t key, const std::string& path) override;
 
-        Slot<Ahrs&, uint64_t, const Quaternion&, real_t, real_t> slotAhrsData{ this, &Isa500App::callbackAhrs };
-        Slot<GyroSensor&, const Vector3&> slotGyroData{ this, &Isa500App::callbackGyroData };
-        Slot<AccelSensor&, const Vector3&> slotAccelData{ this, &Isa500App::callbackAccelData };
-        Slot<MagSensor&, const Vector3&> slotMagData{ this, &Isa500App::callbackMagData };
-        Slot<AccelSensor&, Vector3::Axis, const Vector3&, uint_t> slotAccelCal{ this, &Isa500App::callbackAccelCal };
-
         Slot<Isa500&, uint64_t, uint_t, uint_t, const std::vector<Isa500::Echo>&> slotEchoData{ this, &Isa500App::callbackEchoData };
         Slot<Isa500&, const std::vector<uint8_t>&> slotPingData{ this, &Isa500App::callbackEchogramData };
         Slot<Isa500&, real_t> slotTemperatureData{ this, &Isa500App::callbackTemperatureData };
@@ -34,13 +29,12 @@ namespace IslSdk
         Slot<Isa500&, bool_t> slotSettingsUpdated{ this, &Isa500App::callbackSettingsUpdated };
 
     private:
-        void connectEvent(Device& device);
-        void callbackAhrs(Ahrs& ahrs, uint64_t timeUs, const Quaternion& q, real_t magHeadingRad, real_t turnsCount);
-        void callbackGyroData(GyroSensor& gyro, const Vector3& v);
-        void callbackAccelData(AccelSensor& accel, const Vector3& v);
-        void callbackMagData(MagSensor& mag, const Vector3& v);
-        void callbackAccelCal(AccelSensor& accel, Vector3::Axis axis, const Vector3& v, uint_t progress);
+        AhrsManager ahrs;
+        GyroManager gyro;
+        AccelManager accel;
+        MagManager mag;
 
+        void connectEvent(Device& device);
         void callbackEchoData(Isa500& isa500, uint64_t timeUs, uint_t selectedIdx, uint_t totalEchoCount, const std::vector<Isa500::Echo>& echoes);
         void callbackEchogramData(Isa500& isa500, const std::vector<uint8_t>& data);
         void callbackTemperatureData(Isa500& isa500, real_t temperatureC);

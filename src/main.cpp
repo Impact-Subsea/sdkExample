@@ -63,6 +63,7 @@ int main(int argc, char** argv)
     // Serial over Lan ports can be created using the following function, change the IP address and port to suit your needs
     // sdk.ports.createSol("SOL1", false, true, Utils::ipToUint(192, 168, 1, 215), 1001);
 
+
     while (1)
     {
         Platform::sleepMs(40);                                                  // Sleep for 40ms to limit CPU usage
@@ -135,15 +136,6 @@ void newPort(const SysPort::SharedPtr& sysPort)
         // To discover NMEA devices, call port.discoverNmeaDevices() or port.discoverNmeaDevices(baudrate, timeout)
         // calling this function will stop discovery of ISL devices
     }
-    else if (sysPort->type == SysPort::Type::Sol)
-    {
-        SolPort& port = reinterpret_cast<SolPort&>(*sysPort);
-        // This call is the same as calling port.discoverIslDevices(pid, pn, sn, baudrate, timeout) multiple times with different baudrates
-        port.discoverIslDevices();
-
-        // To discover NMEA devices, call port.discoverNmeaDevices() or port.discoverNmeaDevices(baudrate, timeout)
-        // calling this function will stop discovery of ISL devices
-    }
 }
 //--------------------------------------------------------------------------------------------------
 // This function is called when a new Device is found. It's address has been initialised inside the slot class defined above.
@@ -183,12 +175,10 @@ void newDevice(const Device::SharedPtr& device, const SysPort::SharedPtr& sysPor
     {
         app->setDevice(device);
         apps.push_back(app);
-    }
 
-    if (!device->isConnected)
-    {
         device->connect();
     }
+
 }
 //--------------------------------------------------------------------------------------------------
 // This function is called when a new Nmea device is found. It's address has been initialised inside the slot class defined above.
@@ -202,9 +192,9 @@ void newNmeaDevice(const NmeaDevice::SharedPtr& device, const SysPort::SharedPtr
     }
 }
 //--------------------------------------------------------------------------------------------------
-void portOpen(SysPort& sysPort, bool_t failed)
+void portOpen(SysPort& sysPort, bool_t isOpen)
 {
-    if (!failed)
+    if (isOpen)
     {
         Debug::log(Debug::Severity::Info, "Main", "%s open", sysPort.name.c_str());
     }

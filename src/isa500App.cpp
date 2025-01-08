@@ -23,28 +23,27 @@ void Isa500App::connectSignals(Device& device)
 {
     Isa500& isa500 = reinterpret_cast<Isa500&>(device);
 
-    isa500.ahrs.onData.connect(slotAhrsData);                   // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
-    //isa500.gyro.onData.connect(slotGyroData);                 // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
-    //isa500.accel.onData.connect(slotAccelData);               // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
-    //isa500.mag.onData.connect(slotMagData);                   // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
-    isa500.accel.onCalProgress.connect(slotAccelCal);
+    ahrs.connectSignals(isa500.ahrs, name);
+    gyro.connectSignals(isa500.gyro, name);
+    accel.connectSignals(isa500.accel, name);
+    mag.connectSignals(isa500.mag, name);
 
-    isa500.onEcho.connect(slotEchoData);                        // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
+    isa500.onEcho.connect(slotEchoData);                      // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
     isa500.onEchogramData.connect(slotPingData);
-    //isa500.onTemperature.connect(slotTemperatureData);        // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
-    //isa500.onVoltage.connect(slotVoltageData);                // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
+    isa500.onTemperature.connect(slotTemperatureData);        // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
+    isa500.onVoltage.connect(slotVoltageData);                // Subscribing to this event causes data to be sent from the device at the rate defined by setSensorRates()
     isa500.onTrigger.connect(slotTriggerData);
     isa500.onScriptDataReceived.connect(slotScriptDataReceived);
     isa500.onSettingsUpdated.connect(slotSettingsUpdated);
 
     Isa500::SensorRates rates;
     rates.ping = 0;
-    rates.ahrs = 100;
-    rates.gyro = 100;
-    rates.accel = 100;
-    rates.mag = 100;
-    rates.temperature = 1000;
-    rates.voltage = 1000;
+    rates.ahrs = 1000;
+    rates.gyro = 0;
+    rates.accel = 0;
+    rates.mag = 0;
+    rates.temperature = 0;
+    rates.voltage = 0;
     isa500.setSensorRates(rates);
 }
 //--------------------------------------------------------------------------------------------------
@@ -52,11 +51,10 @@ void Isa500App::disconnectSignals(Device& device)
 {
     Isa500& isa500 = reinterpret_cast<Isa500&>(device);
 
-    isa500.ahrs.onData.disconnect(slotAhrsData);
-    isa500.gyro.onData.disconnect(slotGyroData);
-    isa500.accel.onData.disconnect(slotAccelData);
-    isa500.mag.onData.disconnect(slotMagData);
-    isa500.accel.onCalProgress.disconnect(slotAccelCal);
+    ahrs.disconnectSignals();
+    gyro.disconnectSignals();
+    accel.disconnectSignals();
+    mag.disconnectSignals();
 
     isa500.onEcho.disconnect(slotEchoData);
     isa500.onEchogramData.disconnect(slotPingData);
@@ -98,35 +96,6 @@ void Isa500App::doTask(int_t key, const std::string& path)
 void Isa500App::connectEvent(Device& device)
 {
     Isa500& isa500 = reinterpret_cast<Isa500&>(device);
-}
-//--------------------------------------------------------------------------------------------------
-void Isa500App::callbackAhrs(Ahrs& ahrs, uint64_t timeUs, const Quaternion& q, real_t magHeadingRad, real_t turnsCount)
-{
-    EulerAngles euler = q.toEulerAngles(0);
-
-    Debug::log(Debug::Severity::Info, name.c_str(), "H:%.1f    P:%.2f    R%.2f", Math::radToDeg(euler.heading), Math::radToDeg(euler.pitch), Math::radToDeg(euler.roll));
-}
-//--------------------------------------------------------------------------------------------------
-void Isa500App::callbackGyroData(GyroSensor& gyro, const Vector3& v)
-{
-    Debug::log(Debug::Severity::Info, name.c_str(), "Gyro x:%.2f, y:%.2f, z:%.2f", v.x, v.y, v.z);
-}
-//--------------------------------------------------------------------------------------------------
-void Isa500App::callbackAccelData(AccelSensor& accel, const Vector3& v)
-{
-    Debug::log(Debug::Severity::Info, name.c_str(), "Accel x:%.2f, y:%.2f, z:%.2f", v.x, v.y, v.z);
-}
-//--------------------------------------------------------------------------------------------------
-void Isa500App::callbackMagData(MagSensor& mag, const Vector3& v)
-{
-    Debug::log(Debug::Severity::Info, name.c_str(), "Mag x:%.2f, y:%.2f, z:%.2f", v.x, v.y, v.z);
-}
-//--------------------------------------------------------------------------------------------------
-void Isa500App::callbackAccelCal(AccelSensor& accel, Vector3::Axis axis, const Vector3& v, uint_t progress)
-{
-    const char* lable[] = {"+X", "-X", "+Y", "-Y", "+Z", "-Z"};
-
-    Debug::log(Debug::Severity::Info, name.c_str(), "accel %s   %.2f, %.2f, %.2f,   0x%02x", lable[static_cast<uint_t>(axis)], v.x, v.y, v.z, progress);
 }
 //--------------------------------------------------------------------------------------------------
 void Isa500App::callbackEchoData(Isa500& isa500, uint64_t timeUs, uint_t selectedIdx, uint_t totalEchoCount, const std::vector<Isa500::Echo>& echoes)

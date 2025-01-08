@@ -43,7 +43,7 @@ void App::setDevice(const Device::SharedPtr& device)
         m_device->onPortChanged.connect(slotPortChanged);
         m_device->onPortRemoved.connect(slotPortRemoved);
         m_device->onInfoChanged.connect(slotDeviceInfo);
-        m_device->onPacketCount.connect(slotPacketCount);
+        //m_device->onPacketCount.connect(slotPacketCount);
 
         connectSignals(*m_device);
     }
@@ -81,7 +81,7 @@ void App::callbackPortAdded(Device& device, SysPort& port, const ConnectionMeta&
 //--------------------------------------------------------------------------------------------------
 void App::callbackPortChanged(Device& device, SysPort& port, const ConnectionMeta& meta)
 {
-    if (port.type == SysPort::Type::Serial || port.type == SysPort::Type::Sol)
+    if (port.type == SysPort::Type::Serial)
     {
         Debug::log(Debug::Severity::Info, name.c_str(), "Baudrate for %04u.%04u on port %s changed to %u", device.info.pn, device.info.sn, port.name.c_str(), meta.baudrate);
     }

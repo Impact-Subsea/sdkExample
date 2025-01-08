@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(sdkExample LANGUAGES CXX)
 
+include_directories( ${PROJECT_SOURCE_DIR}/islSdk/src)
+include_directories( ${PROJECT_SOURCE_DIR}/src)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -26,6 +29,7 @@ endif()
 
 set(HEADERS
     src/app.h
+    src/imuManager.h
     src/isa500App.h
     src/isd4000App.h
     src/ism3dApp.h
@@ -37,6 +41,7 @@ set(HEADERS
 set(SOURCES
     src/main.cpp
     src/app.cpp
+    src/imuManager.cpp
     src/isa500App.cpp
     src/isd4000App.cpp
     src/ism3dApp.cpp
@@ -47,5 +52,4 @@ set(SOURCES
 
 add_subdirectory(islSdk)
 add_executable (${PROJECT_NAME} ${SOURCES} ${HEADERS})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME} islSdk)

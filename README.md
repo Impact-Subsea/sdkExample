@@ -50,7 +50,9 @@ Impact Subsea SDK example app written in C++17
     ```
     If using windows
     ```bash
-    $ cmake --build .
+    $ cmake --build . --config Debug
+    or
+    $ cmake --build . --config Release
     ```
 
 8. Run the exe in the folder sdkExample/build/bin/
